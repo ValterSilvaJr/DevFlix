@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PageDefault from '../../../components/PageDefault';
 import { Link } from 'react-router-dom';
 import FormField from '../../../components/FormField';
+import Button from '../../../components/Button';
 
 function CadastroCategoria() {
     const [categorias, setCategorias] = useState([]);
@@ -38,13 +39,22 @@ function CadastroCategoria() {
         setState(valoresIniciais)
     }
 
+    useEffect(() => {
+        const URL_CATEGORIA = 'http://localhost:8080/categorias'
+        fetch(URL_CATEGORIA).then(async (response) => {
+            const data = await response.json();
+            console.log(response);
+            setCategorias(data);
+            return;
+        });
+    },[]);
+
     return (
         <PageDefault>
-            <h1>Cadastro de Categoria: {state.nome}</h1>
+            <h1>Cadastro de Categoria:</h1>
 
             <form onSubmit={handleSubmit}>
                 <FormField
-                    inputType='input'
                     label="Nome da Categoria"
                     type="text"
                     name="nome"
@@ -54,49 +64,33 @@ function CadastroCategoria() {
 
                 <FormField
                     label="Descrição do Video"
-                    type="text"
+                    type="textarea"
                     name="descricao"
                     value={state.descricao}
                     onChange={handleChange}                   
                 />
 
                 <FormField
-                    // style={{ background: state.cor}}
                     label='Cor'
-                    inputType="input"
                     name="cor"
                     type="color"
                     value={state.cor}
                     onChange={handleChange}
                 />
-
-                {/* <fieldset>
-                    <label>Descrição:</label>
-                    <textarea
-                        name="descricao"
-                        type="text"
-                        value={state.descricao}
-                        onChange={handleChange}
-                    />
-                </fieldset> */}
-                {/* <fieldset style={{ background: state.cor}}>
-                    <label htmlFor="cor">Cor:</label>
-                    <input
-                        name="cor"
-                        type="color"
-                        value={state.cor}
-                        onChange={handleChange}
-                    />
-                </fieldset> */}
-                <fieldset>
-                    <button>Cadastrar</button>
-                </fieldset>
+                <Button>
+                    Cadastrar
+                </Button>
+                {categorias.length === 0 && (
+                    <div>
+                        Loading...
+                    </div>
+                )}
             </form>
             <ul>
-                {categorias.map((categorias, index) => {
+                {categorias.map((categoria, index) => {
                     return(
-                        <li key={`${categorias} ${index}`}>
-                            {categorias.nome}
+                        <li key={`${categoria} ${index}`}>
+                            {categoria.titulo}
                         </li>
                     )
                 })}
