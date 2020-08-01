@@ -3,50 +3,38 @@ import PageDefault from '../../../components/PageDefault';
 import { Link } from 'react-router-dom';
 import FormField from '../../../components/FormField';
 import Button from '../../../components/Button';
+import useForm from '../../../hooks/useForm';
+import api from '../../../services/api';
 
 function CadastroCategoria() {
     const [categorias, setCategorias] = useState([]);
-
     const valoresIniciais = {
         nome:'',
         descricao: '',
         cor: ''
     }
 
-    const [state, setState] = useState(valoresIniciais);
+    const { 
+        values, 
+        loading, 
+        handleChange, 
+        handleSubmit, 
+    } = useForm(valoresIniciais);
 
-    function setValue(key, value){
-        setState({
-            ...state,
-            [key]: value
-        });
-    }
-    
-    function handleChange(ChangeEvent){
-        const { value } = ChangeEvent.target;
-        setValue(
-            ChangeEvent.target.getAttribute('name'), 
-            value
-        );
-    }
-
-    function handleSubmit(FormEvent){
-        FormEvent.preventDefault();
+    const enviarCategoria = () => {
         setCategorias([
             ...categorias,
-            state
+            values
         ]);
-        setState(valoresIniciais)
     }
 
     useEffect(() => {
-        const URL_CATEGORIA = window.location.hostname.includes('localhost') 
-            ? 'http://localhost:8080/categorias'
-            : 'https://devflix-ten.herokuapp.com/categorias'
-        fetch(URL_CATEGORIA).then(async (response) => {
-            const data = await response.json();
-            //console.log(response);
-            setCategorias(data);
+        // const URL_CATEGORIA = window.location.hostname.includes('localhost') 
+        //     ? 'http://localhost:8080/categorias'
+        //     : 'https://devflix-ten.herokuapp.com/categorias'
+        api.get('categorias').then(async (response) => {
+            const dataCategorias = await response.data;
+            setCategorias(dataCategorias);
             return;
         });
     },[]);
@@ -55,12 +43,12 @@ function CadastroCategoria() {
         <PageDefault>
             <h1>Cadastro de Categoria:</h1>
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit(enviarCategoria)}>
                 <FormField
                     label="Nome da Categoria"
                     type="text"
                     name="nome"
-                    value={state.nome}
+                    value={values.nome}
                     onChange={handleChange}
                 />
 
@@ -68,7 +56,7 @@ function CadastroCategoria() {
                     label="Descrição do Video"
                     type="textarea"
                     name="descricao"
-                    value={state.descricao}
+                    value={values.descricao}
                     onChange={handleChange}                   
                 />
 
@@ -76,7 +64,7 @@ function CadastroCategoria() {
                     label='Cor'
                     name="cor"
                     type="color"
-                    value={state.cor}
+                    value={values.cor}
                     onChange={handleChange}
                 />
                 <Button>
@@ -84,7 +72,7 @@ function CadastroCategoria() {
                 </Button>
                 {categorias.length === 0 && (
                     <div>
-                        Loading...
+                        {loading === true ? "Enviando dados..." : ""}
                     </div>
                 )}
             </form>
