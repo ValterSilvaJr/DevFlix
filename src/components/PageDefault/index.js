@@ -9,9 +9,9 @@ const Main = styled.main`
     flex: 1;
     padding-top: 50px;
     padding-left: 5%;
-    padding-right: 5%5%;
-    ${({paddingAll}) => css`
-        padding: ${paddingAll};
+    padding-right: 5%;
+    ${({ paddingAll }) => css`
+        padding: ${ paddingAll };
     `}
 `;
 
@@ -19,7 +19,7 @@ function PageDefault({ children, paddingAll }){
     return(
         <>
             <Menu />
-                <Main paddingAll={paddingAll}>
+                <Main paddingAll={ paddingAll }>
                     { children }
                 </Main>
             <Footer/>
